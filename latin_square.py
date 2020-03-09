@@ -48,6 +48,18 @@ def save_multi_ext(df, file, extension=None):
 
 
 def reorder_columns(df, item_col, sub_exp_col, item_number_col, cond_col):
+    """Reorder the columns of a data frame such that the most important ones are at the beginning; unnamed columns are appended at the right edge. Return reordered df.
+
+    Arguments:
+        df {[type]} -- pandas Dataframe
+        item_col {str} -- Column with the item text
+        sub_exp_col {str} -- Column containing the subexperiment identifier
+        item_number_col {str} -- Column with the item number
+        cond_col {str} -- Column containing the condition identifiers
+
+    Returns:
+        [type] -- [description]
+    """
     # reorder the most important columns
     col_order = [item_col, sub_exp_col,
                  item_number_col, cond_col]
@@ -57,6 +69,16 @@ def reorder_columns(df, item_col, sub_exp_col, item_number_col, cond_col):
 
 
 def check_permutations(df, item_number_col, cond_col, conditions):
+    """Check if all combinations of items and conditions are present in the data. Raise exception if not.
+
+    Arguments:
+        df {[type]} -- pandas Dataframe with all conditions for each item
+        item_number_col {str} -- Column with the item number (default: {"item_number"})
+        cond_col {str} -- Column containing the condition identifiers (default: {"cond"})
+        conditions {list} -- List of conditions
+    Raises:
+        Exception: Not all permutations present; lists which ones
+    """
     # do a cartesian product of item numbers and conditions
     products = [(item, cond) for item in set(df[item_number_col])
                 for cond in conditions]
@@ -84,9 +106,6 @@ def to_latin_square(df, outname, sub_exp_col="sub_exp", cond_col="cond", item_co
         cond_col {str} -- Column containing the condition identifiers (default: {"cond"})
         item_col {str} -- Column with the item text (default: {"item"})
         item_number_col {str} -- Column with the item number (default: {"item_number"})
-
-    Returns:
-        list -- List with all the names of the files that were saved to disk
     """
     dfs_critical = []
     dfs_filler = []
@@ -128,8 +147,6 @@ def to_latin_square(df, outname, sub_exp_col="sub_exp", cond_col="cond", item_co
     # add the fillers to the critical lists
     for i, df in enumerate(dfs_critical):
         dfs_critical[i] = pd.concat([df, *dfs_filler])
-
-    for i, df in enumerate(dfs_critical):
         save_multi_ext(df, f"{name}{i+1}{extension}")
 
 
