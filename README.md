@@ -1,12 +1,14 @@
 # Get Latin Square Lists
 
-The script has one main job: read a table-like object (either .csv, .txt, or .xlsx) with each item in all relevant conditions and output several lists (whose number is based on the amount of conditions) based on a Latin Square (see below). Its main intended use case is linguistic experiments design all full-within (conditions are within-items and within-subjects). In addition all single-condition sub-experiments present in the file will be appended to the lists with the critical (multi-condition) items in full. Currently, this only works with one critical sub-experiment; but extending it to overcome this difficulty should be relatively simple.
+The script has one main job: read a table-like object (either .csv, .txt, or .xlsx) with each item in all relevant conditions and output several lists (whose number is determined by the amount of conditions) based on a Latin Square (see below). In addition to simply splitting up the critical items, all single-condition sub-experiments present in the file will be appended to the lists with the critical (multi-condition) items in full. Currently, this only works with one critical sub-experiment; but extending it to overcome this difficulty should be relatively simple.
+
+The principal intended use case is fully within (conditions are both within-items and within-subjects) linguistic experiments.
 
 ## Input File
 
 ### Critical Items
 
-The following table is a typical (albeit quite short) example of an input file. Note that all items come in four versions representing a condition (read: a permutation) of the same base item. 
+The following table is a typical (albeit quite short) example of an input file. Note that all items come in four versions representing a condition (read: a permutation) of the same base item.
 
 | sub_exp | item_number | cond | item                                        |
 | ------- | ----------- | ---- | ------------------------------------------- |
@@ -29,7 +31,7 @@ The following table is a typical (albeit quite short) example of an input file. 
 
 ### Fillers
 
-To add fillers (identifed by single-condition items) to the four output lists, the input table should contain them as different sub-experiments. Here's an example with two distinct filler experiments: 
+To add fillers (identifed by single-condition items) to the four output lists, the input table should contain them as different sub-experiments. Here's an example with two distinct filler experiments:
 
 | sub_exp | item_number | cond | item                                          |
 | ------- | ----------- | ---- | --------------------------------------------- |
