@@ -57,4 +57,4 @@ Below is a Latin Square for a 2x2 experiment (where 'a' to 'd' represent the rel
 
 ## Feedback
 
-If you have any comments, feature requests or suggestions, please feel free to send me an [e-mail](mailto:maik.thalmann@gmail.com?subject=[GitHub]%20PyExp).
+If you have any comments, feature requests or suggestions, please feel free to send me an [e-mail](mailto:maik.thalmann@gmail.com?subject=[GitHub]%20Latin-Square).
