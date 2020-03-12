@@ -146,7 +146,7 @@ def to_latin_square(df, outname, sub_exp_col="sub_exp", cond_col="cond", item_co
 
     # add the fillers to the critical lists
     for i, df in enumerate(dfs_critical):
-        dfs_critical[i] = pd.concat([df, *dfs_filler])
+        df = pd.concat([df, *dfs_filler])
         save_multi_ext(df, f"{name}{i+1}{extension}")
 
 
