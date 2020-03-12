@@ -4,20 +4,16 @@ from itertools import cycle
 import pandas as pd
 
 
-def read_multi_ext(file, extension=None):
+def read_multi_ext(file):
     """Read csv, xlsx, and txt files and returns a pandas DataFrame.
 
     Arguments:
         file {str} -- File to read in
 
-    Keyword Arguments:
-        extension {str} -- Extension of the file; inferred if None (default: {None})
-
     Returns:
         df -- pandas DataFrame
     """
-    if extension == None:
-        _, extension = os.path.splitext(file)
+    _, extension = os.path.splitext(file)
     if extension == ".csv":
         df = pd.read_csv(file, sep=";")
     elif extension == ".xlsx":
@@ -27,18 +23,14 @@ def read_multi_ext(file, extension=None):
     return df
 
 
-def save_multi_ext(df, file, extension=None):
-    """Save a pandas DataFrame, depending on extension used in outname or given explicitly.
+def save_multi_ext(df, file):
+    """Save a pandas DataFrame, depending on extension used in file name.
 
     Arguments:
         df {df} -- pandas DataFrame to save
         file {str} -- Name of the saved file
-
-    Keyword Arguments:
-        extension {str} -- Extension of the file; inferred if None (default: {None})
     """
-    if extension == None:
-        _, extension = os.path.splitext(file)
+    _, extension = os.path.splitext(file)
     if extension == ".csv":
         df.to_csv(file, sep=';', index=False)
     elif extension == ".xlsx":
@@ -108,7 +100,6 @@ def to_latin_square(df, outname, sub_exp_col="sub_exp", cond_col="cond", item_co
         item_number_col {str} -- Column with the item number (default: {"item_number"})
     """
     dfs_critical = []
-    dfs_filler = []
     name, extension = os.path.splitext(outname)
     # split the dataframe by the sub experiment value
     dfs = [pd.DataFrame(x) for _, x in df.groupby(
@@ -116,37 +107,33 @@ def to_latin_square(df, outname, sub_exp_col="sub_exp", cond_col="cond", item_co
     for frame in dfs:
         # get the unique condition values and sort them
         conditions = sorted(list(set(frame[cond_col])))
-
         # check whether all combos of items and conditions are present
         check_permutations(frame, item_number_col, cond_col, conditions)
+        # rearrange the most important columns
+        frame_new = reorder_columns(
+            frame, item_col, sub_exp_col, item_number_col, cond_col)
 
-        # for filler dfs, just reorder the columns
-        if len(conditions) == 1:
-            frame = reorder_columns(
-                frame, item_col, sub_exp_col, item_number_col, cond_col)
-            # and add them to the correct list
-            dfs_filler.append(frame)
-        # for critical sub experiments generate the appropriate amount of lists
-        else:
+        # for critical sub-experiments generate the appropriate amount of lists
+        if len(conditions) > 1:
             for k in range(len(conditions)):
                 # order the conditions to match the list being created
                 lat_conditions = conditions[k:] + conditions[:k]
-                # generate (and on subsequent runs reset) the new df with all the columns in the argument df
-                out_df = pd.DataFrame(columns=frame.columns)
                 # look for the appriate rows in the argument df (using the conditions multiple times with 'cycle')
                 out_l = []
-                for item, cond in zip(set(sorted(frame[item_number_col])), cycle(lat_conditions)):
-                    out_l.append(frame[frame.item_number.eq(
-                        item) & frame.cond.eq(cond)])
+                for item, cond in zip(set(sorted(frame_new[item_number_col])), cycle(lat_conditions)):
+                    out_l.append(frame_new[frame_new.item_number.eq(
+                        item) & frame_new.cond.eq(cond)])
+                # add all the rows we found into a combined df
                 out_df = pd.concat(out_l)
-                # reorder the most important columns
-                out_df = reorder_columns(
-                    out_df, item_col, sub_exp_col, item_number_col, cond_col)
+                # add df to critical list
                 dfs_critical.append(out_df)
+            # remove the frame from the dfs list (which will be the filler list at the end)
+            dfs.remove(frame)
 
     # add the fillers to the critical lists
     for i, df in enumerate(dfs_critical):
-        df = pd.concat([df, *dfs_filler])
+        df = pd.concat([df, *dfs])
+        # and save the lists
         save_multi_ext(df, f"{name}{i+1}{extension}")
 
 
