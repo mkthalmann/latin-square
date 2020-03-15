@@ -32,9 +32,9 @@ def save_multi_ext(df, file):
     """
     _, extension = os.path.splitext(file)
     if extension == ".csv":
-        df.to_csv(file, sep=';', index=False)
+        df.to_csv(file, sep=";", index=False)
     elif extension == ".xlsx":
-        df.to_excel(file, sheet_name='Sheet1', index=False)
+        df.to_excel(file, sheet_name="Sheet1", index=False)
     elif extension == ".txt":
         df.to_table(file, index=False)
 
@@ -53,8 +53,7 @@ def reorder_columns(df, item_col, sub_exp_col, item_number_col, cond_col):
         [type] -- [description]
     """
     # reorder the most important columns
-    col_order = [item_col, sub_exp_col,
-                 item_number_col, cond_col]
+    col_order = [item_col, sub_exp_col, item_number_col, cond_col]
     # and just add the remaining columns (if any)
     new_cols = col_order + (df.columns.drop(col_order).tolist())
     return df[new_cols]
@@ -72,21 +71,37 @@ def check_permutations(df, item_number_col, cond_col, conditions):
         Exception: Not all permutations present; lists which ones
     """
     # do a cartesian product of item numbers and conditions
-    products = [(item, cond) for item in set(df[item_number_col])
-                for cond in conditions]
+    products = [
+        (item, cond) for item in set(df[item_number_col]) for cond in conditions
+    ]
     # check if all such products exist in the dataframe
-    check_list = [((df[item_number_col] == item)
-                   & (df[cond_col] == cond)).any() for item, cond in products]
+    check_list = [
+        ((df[item_number_col] == item) & (df[cond_col] == cond)).any()
+        for item, cond in products
+    ]
     # if they are not all there, raise an error and show which combos are missing
     if not all(check_list):
         # get missing combinations
-        missing_combos = ', '.join([''.join(map(str, product)) for product, boolean in zip(
-            products, check_list) if not boolean])
+        missing_combos = ", ".join(
+            [
+                "".join(map(str, product))
+                for product, boolean in zip(products, check_list)
+                if not boolean
+            ]
+        )
         raise Exception(
-            f"Not all permutations of items and conditions are present in the dataframe. Missing combinations: {missing_combos}")
+            f"Not all permutations of items and conditions are present in the dataframe. Missing combinations: {missing_combos}"
+        )
 
 
-def to_latin_square(df, outname, sub_exp_col="sub_exp", cond_col="cond", item_col="item", item_number_col="item_number"):
+def to_latin_square(
+    df,
+    outname,
+    sub_exp_col="sub_exp",
+    cond_col="cond",
+    item_col="item",
+    item_number_col="item_number",
+):
     """Take a dataframe with all conditions and restructure it with Latin Square. Saves the files.
 
     Arguments:
@@ -102,8 +117,7 @@ def to_latin_square(df, outname, sub_exp_col="sub_exp", cond_col="cond", item_co
     dfs_critical = []
     name, extension = os.path.splitext(outname)
     # split the dataframe by the sub experiment value
-    dfs = [pd.DataFrame(x) for _, x in df.groupby(
-        sub_exp_col, as_index=False)]
+    dfs = [pd.DataFrame(x) for _, x in df.groupby(sub_exp_col, as_index=False)]
     for frame in dfs:
         # get the unique condition values and sort them
         conditions = sorted(list(set(frame[cond_col])))
@@ -111,7 +125,8 @@ def to_latin_square(df, outname, sub_exp_col="sub_exp", cond_col="cond", item_co
         check_permutations(frame, item_number_col, cond_col, conditions)
         # rearrange the most important columns
         frame_new = reorder_columns(
-            frame, item_col, sub_exp_col, item_number_col, cond_col)
+            frame, item_col, sub_exp_col, item_number_col, cond_col
+        )
 
         # for critical sub-experiments generate the appropriate amount of lists
         if len(conditions) > 1:
@@ -120,9 +135,14 @@ def to_latin_square(df, outname, sub_exp_col="sub_exp", cond_col="cond", item_co
                 lat_conditions = conditions[k:] + conditions[:k]
                 # look for the appriate rows in the argument df (using the conditions multiple times with 'cycle')
                 out_l = []
-                for item, cond in zip(set(sorted(frame_new[item_number_col])), cycle(lat_conditions)):
-                    out_l.append(frame_new[frame_new.item_number.eq(
-                        item) & frame_new.cond.eq(cond)])
+                for item, cond in zip(
+                    set(sorted(frame_new[item_number_col])), cycle(lat_conditions)
+                ):
+                    out_l.append(
+                        frame_new[
+                            frame_new.item_number.eq(item) & frame_new.cond.eq(cond)
+                        ]
+                    )
                 # add all the rows we found into a combined df
                 out_df = pd.concat(out_l)
                 # add df to critical list

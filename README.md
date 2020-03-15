@@ -1,3 +1,5 @@
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+
 # Get Latin Square Lists
 
 The script has one main job: read a table-like object (either .csv, .txt, or .xlsx) with each item in all relevant conditions and output several lists (whose number is determined by the amount of conditions) based on a Latin Square (see below). In addition to simply splitting up the critical items, all single-condition sub-experiments present in the file will be appended to the lists with the critical (multi-condition) items in full. Currently, this only works with one critical sub-experiment; but extending it to overcome this difficulty should be relatively simple.
