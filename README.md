@@ -59,6 +59,10 @@ Below is a Latin Square for a 2x2 experiment (where 'a' to 'd' represent the rel
 | Item 5 (same as I1) | a             | b             | c             | d             | a                          | ... |
 | ...                 | ...           | ...           | ...           | ...           | ...                        | ... |
 
+## License
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International License</a>.
+
 ## Feedback
 
 If you have any comments, feature requests or suggestions, please feel free to send me an [e-mail](mailto:maik.thalmann@gmail.com?subject=[GitHub]%20Latin-Square).
